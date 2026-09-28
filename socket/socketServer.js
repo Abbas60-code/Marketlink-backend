@@ -6,7 +6,11 @@ let io;
 export const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      origin: [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'https://marketlink-frontend-six.vercel.app',
+      ],
       methods: ['GET', 'POST'],
       credentials: true,
     },
@@ -19,7 +23,7 @@ export const initSocket = (httpServer) => {
       return next(new Error('Authentication error: Token missing'));
     }
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'techwiz_secret');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
       socket.user = decoded; // { id, role, ... }
       next();
     } catch (err) {
