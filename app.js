@@ -1,5 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
+import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import bannerRoutes from './routes/bannerRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
@@ -12,6 +16,9 @@ import favoriteRoutes from './routes/favoriteRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+
+// Connect DB (safe to call multiple times — Mongoose caches the connection)
+connectDB();
 
 const app = express();
 
