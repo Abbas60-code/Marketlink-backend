@@ -20,12 +20,23 @@ import chatRoutes from './routes/chatRoutes.js';
 const app = express();
 
 // Middleware
+// Allowed origins: localhost + production + all Vercel preview deployments
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://marketlink-frontend-six.vercel.app',
+];
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'https://marketlink-frontend-six.vercel.app',
-  ],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    // Allow exact matches
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Allow ALL Vercel preview deployments for this project
+    if (origin.match(/^https:\/\/marketlink-frontend.*\.vercel\.app$/)) return callback(null, true);
+    callback(new Error(`CORS blocked: ${origin}`));
+  },
   credentials: true,
 }));
 app.use(express.json());

@@ -6,11 +6,17 @@ let io;
 export const initSocket = (httpServer) => {
   io = new Server(httpServer, {
     cors: {
-      origin: [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'https://marketlink-frontend-six.vercel.app',
-      ],
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        const allowed = [
+          'http://localhost:5173',
+          'http://127.0.0.1:5173',
+          'https://marketlink-frontend-six.vercel.app',
+        ];
+        if (allowed.includes(origin)) return callback(null, true);
+        if (origin.match(/^https:\/\/marketlink-frontend.*\.vercel\.app$/)) return callback(null, true);
+        callback(new Error(`CORS blocked: ${origin}`));
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },
