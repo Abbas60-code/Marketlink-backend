@@ -17,9 +17,6 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 
-// Connect DB (safe to call multiple times — Mongoose caches the connection)
-connectDB();
-
 const app = express();
 
 // Middleware
@@ -33,6 +30,18 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// DB connection middleware — ensures DB is connected before every request
+// This is the correct pattern for Vercel serverless (no persistent server)
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error('DB connection failed:', err.message);
+    res.status(500).json({ message: 'Database connection failed', error: err.message });
+  }
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
